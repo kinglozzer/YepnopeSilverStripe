@@ -15,6 +15,7 @@ Simply clone or download this repository and put it in a folder called 'yepnopes
 
 The simplest way to add a file, whether it's Javascript or CSS, is to use the `add_file()` function in your `Page_Controller`:
 
+```php
 	class Page_Controller extends ContentController {
 	
 		public function init() {
@@ -25,9 +26,11 @@ The simplest way to add a file, whether it's Javascript or CSS, is to use the `a
 		}
 	
 	}
-	
+```
+		
 You can also remove a file from certain page types by using the `clear()` function. For this example, let's assume that you want to load the Javascript file from the above example on every page _except_ the home page:
 
+```php
 	class HomePage_Controller extends Page_Controller {
 	
 		public function init() {
@@ -37,19 +40,21 @@ You can also remove a file from certain page types by using the `clear()` functi
 		}
 	
 	}
+```
 
-If you're using modernizr and don't need to include yepnope.js, you can set your custom script with the following:
+If you're already using yepnope or modernizr and don't need to include yepnope.js, you can remove the requirement (or set it to use a different script) with the following:
 
+```php
 	class Page_Controller extends ContentController {
 	
 		public function init() {
 			parent::init();
 			
-			Yepnope::set_modernizr('themes/yourtheme/javascript/modernizr.min.js');
+			Yepnope::set_yepnope('themes/yourtheme/javascript/modernizr.min.js');
 		}
 	
 	}
-
+```
 
 ##TODO##
 

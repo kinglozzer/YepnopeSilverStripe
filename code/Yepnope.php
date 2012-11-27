@@ -23,8 +23,13 @@ class Yepnope extends Requirements {
 		return self::$backend;
 	}
 
-	public static function set_modernizr($file) {
-		self::backend()->set_modernizr($file);
+	/**
+	 * Set a custom file to include for 'yepnope', such as modernizr or false if not required
+	 *
+	 * @param string|boolean $file
+	 */
+	public static function set_yepnope($file) {
+		self::backend()->set_yepnope($file);
 	}
 
 	/**
@@ -54,19 +59,17 @@ class Yepnope_Backend extends Requirements_Backend {
 
 	protected $yepnopeFiles = array();
 
-	protected $modernizr = 'yepnopesilverstripe/javascript/yepnope.1.5.4-min.js';
+	protected $yepnopeScript = 'yepnopesilverstripe/javascript/yepnope.1.5.4-min.js';
 
-	public function set_modernizr($path) {
-		$this->modernizr = $path;
+	public function set_yepnope($file) {
+		$this->yepnopeScript = $file;
 	}
 
-	public function get_modernizr() {
-		return $this->modernizr;
+	public function get_yepnope() {
+		return $this->yepnopeScript;
 	}
 
 	public function add_file($file) {
-		Requirements::javascript($this->get_modernizr());
-
 		$this->yepnopeFiles[$file] = true;
 
 		$this->evalYepnope();
@@ -97,10 +100,12 @@ class Yepnope_Backend extends Requirements_Backend {
 	}
 
 	public function evalYepnope() {
-		$str = 'yepnope([';
+		if ($yepnope = $this->get_yepnope()) Requirements::javascript($yepnope);
 
+		$str = 'yepnope([';
 		$i = 1;
 		$count = count($this->yepnopeFiles);
+
 		foreach ($this->yepnopeFiles as $file => $dummy) {
 			$path = $this->path_for_file($file);
 
@@ -110,7 +115,6 @@ class Yepnope_Backend extends Requirements_Backend {
 		}
 
 		$str .= '])';
-		
 		Requirements::customScript($str, time());
 	}
 
