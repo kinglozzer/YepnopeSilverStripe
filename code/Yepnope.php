@@ -102,19 +102,14 @@ class Yepnope_Backend extends Requirements_Backend {
 	public function evalYepnope() {
 		if ($yepnope = $this->get_yepnope()) Requirements::javascript($yepnope);
 
-		$str = 'yepnope([';
-		$i = 1;
-		$count = count($this->yepnopeFiles);
+		$allYepnopeFiles = array();
 
-		foreach ($this->yepnopeFiles as $file => $dummy) {
+		foreach ($this->yepnopeFiles as $file => $val) {
 			$path = $this->path_for_file($file);
-
-			$str .= ($i == $count) ? "'$path'" : "'$path',";
-
-			$i++;
+			$allYepnopeFiles[] = $path;
 		}
 
-		$str .= '])';
+		$str = "yepnope(['" . implode("','", $allYepnopeFiles) . "'])";
 		Requirements::customScript($str, time());
 	}
 
