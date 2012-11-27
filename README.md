@@ -1,10 +1,10 @@
 #YepnopeSilverStripe#
 
-A module to allow loading of Javascript & CSS using the conditional loader [http://yepnopejs.com]yepnopejs
+A module to allow loading of Javascript & CSS using the conditional loader [yepnopejs](http://yepnopejs.com).
 
 By:
 
-Loz Calver & Colin Richardson - [http://www.bigfork.co.uk/]Bigfork Ltd
+Loz Calver & Colin Richardson - [Bigfork Ltd](http://www.bigfork.co.uk/).
 
 
 ##Installation:##
@@ -13,7 +13,7 @@ Simply clone or download this repository and put it in a folder called 'yepnopes
 
 ##Examples:##
 
-The simplest way to add a file, whether it's Javascript or CSS, is to use the add_file() function in your Page_Controller:
+The simplest way to add a file, whether it's Javascript or CSS, is to use the `add_file()` function in your `Page_Controller`:
 
 	class Page_Controller extends ContentController {
 	
@@ -26,7 +26,7 @@ The simplest way to add a file, whether it's Javascript or CSS, is to use the ad
 	
 	}
 	
-You can also remove a file from certain page types by using the clear() function. For this example, let's assume that you want to load the Javascript file from the above example on every page _except_ the home page:
+You can also remove a file from certain page types by using the `clear()` function. For this example, let's assume that you want to load the Javascript file from the above example on every page _except_ the home page:
 
 	class HomePage_Controller extends Page_Controller {
 	
