@@ -3,9 +3,11 @@
 A module to allow loading of Javascript & CSS using the conditional loader [yepnopejs](http://yepnopejs.com).
 
 By:
-
 Loz Calver & Colin Richardson - [Bigfork Ltd](http://www.bigfork.co.uk/).
 
+##About yepnope:##
+
+_"yepnope is an asynchronous conditional resource loader that's super-fast, and allows you to load only the scripts that your users need."_
 
 ##Installation:##
 
@@ -13,47 +15,51 @@ Simply clone or download this repository and put it in a folder called 'yepnopes
 
 ##Examples:##
 
+###Add files:###
 The simplest way to add a file, whether it's Javascript or CSS, is to use the `add_file()` function in your `Page_Controller`:
 
 ```php
-	class Page_Controller extends ContentController {
-	
-		public function init() {
-			parent::init();
-			
-			Yepnope::add_file('themes/yourtheme/javascript/yourjavascript.js');
-			Yepnope::add_file('themes/yourtheme/css/extrastyles.css');
-		}
-	
-	}
-```
+class Page_Controller extends ContentController {
+
+	public function init() {
+		parent::init();
 		
+		Yepnope::add_file('themes/yourtheme/javascript/yourjavascript.js');
+		Yepnope::add_file('themes/yourtheme/css/extrastyles.css');
+	}
+
+}
+```
+
+###Remove files:###
 You can also remove a file from certain page types by using the `clear()` function. For this example, let's assume that you want to load the Javascript file from the above example on every page _except_ the home page:
 
 ```php
-	class HomePage_Controller extends Page_Controller {
+class HomePage_Controller extends Page_Controller {
+
+	public function init() {
+		parent::init();
 	
-		public function init() {
-			parent::init();
-		
-			Yepnope::clear('themes/yourtheme/javascript/yourjavascript.js');
-		}
-	
+		Yepnope::clear('themes/yourtheme/javascript/yourjavascript.js');
 	}
+
+}
 ```
 
+###Customise:###
 If you're already using yepnope or modernizr and don't need to include yepnope.js, you can remove the requirement (or set it to use a different script) with the following:
 
 ```php
-	class Page_Controller extends ContentController {
-	
-		public function init() {
-			parent::init();
-			
-			Yepnope::set_yepnope('themes/yourtheme/javascript/modernizr.min.js');
-		}
-	
+class Page_Controller extends ContentController {
+
+	public function init() {
+		parent::init();
+		
+		Yepnope::set_yepnope(false) // Removes built-in requirement for yepnope.js script
+		Yepnope::set_yepnope('themes/yourtheme/javascript/modernizr.min.js'); // Sets requirement to use a custom script
 	}
+
+}
 ```
 
 ##TODO##
