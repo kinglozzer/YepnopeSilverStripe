@@ -116,41 +116,26 @@ class Yepnope_Backend extends Requirements_Backend {
 		if ($this->customScriptID) $this->clear($this->customScriptID);
 
 		$str = "yepnope([{\n";	
-		$allYepnopeTests = array();
+		$allTests = array();
 
-		foreach ($this->yepnopeTests as $test) {
-			$testStr = '';
-			if ($test['test']) {
-				$testStr .= "test: " . $test['test'];
-				if (isset($test['yep'])) {
-					$testStr .= ",\nyep: ['";
-					$testStr .= implode("', '", $test['yep']);
-					$testStr .= "']";
+		foreach ($this->yepnopeTests as $property) {
+			$tempArray = array();
+			foreach ($property as $name=>$value) {
+				if ($value !== null) {
+					$tmpStr = "\t" . $name . ": ";
+					if (is_array($value)) {
+						$tmpStr .= "['" . implode("', '", $value) . "']";
+					} else {
+						$tmpStr .= $value;
+					}
+					$tempArray[] = $tmpStr;
 				}
-				if (isset($test['nope'])) {
-					$testStr .= ",\nnope: ['";
-					$testStr .= implode("', '", $test['nope']);
-					$testStr .= "']";
-				}
-				$testStr .= ",\n";
 			}
-			if (isset($test['load'])) {
-				$testStr .= "load: ['";
-				$testStr .= implode("', '", $test['load']);
-				$testStr .= "']";
-			}
-			if (isset($test['callback'])) {
-				$testStr .= ",\ncallback: " . $test['callback'];
-			}
-			if (isset($test['complete'])) {
-				$testStr .= ",\ncomplete: " . $test['complete'];
-			}
-			$allYepnopeTests[] = $testStr .= "\n";
+			$allTests[] = implode(",\n", $tempArray) . "\n";
 		}
 
-		$str .= implode("}, {\n", $allYepnopeTests) . "}]);";
-		
-		$this->customScriptID = time();
+		$str .= implode("}, {\n", $allTests) . "}]);";	
+		$this->customScriptID = "yepnope-" . time();
 		Requirements::customScript($str, $this->customScriptID);
 	}
 
