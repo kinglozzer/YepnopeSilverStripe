@@ -79,6 +79,7 @@ Yepnope::add_test($test, $yep=null, $nope=null, $load=null, $callback=null, $com
 * `$load` - The file (or array of files) to be loaded regardless of whether the test reuturns true or false
 * `$callback` - The function to be called after each resource is loaded
 * `$complete` - The function to be called once after all resources are loaded
+* `$id` - The unique identifier for the test - see below
 
 Example test:
 
@@ -102,6 +103,55 @@ class Page_Controller extends ContentController {
 ```
 
 The lists of files passed to the function can be either strings, arrays or `null` (for example, if no extra files are needed for the 'yep' argument).
+
+###Clear files & tests:###
+Both the `add_files()` and `add_test()` methods take an optional, last argument (4th and 7th arguments respectively) for a unique identifier. This identifier can then be used to remove a test on certain pages. In the example below, let's assume you have files you want to load on every page _except_ pages with the 'ContactPage' page type:
+
+```php
+// Page.php
+class Page_Controller extends ContentController {
+
+	public function init() {
+		parent::init();
+	
+		$myFiles = array(
+			'themes/yourtheme/js/filea.js',
+			'themes/yourtheme/js/fileb.js'
+		);
+
+		Yepnope::add_files($myFiles, null, null, 'MyFiles'); // Set the id 'MyFiles'
+	}
+
+}
+
+// ContactPage.php
+class ContactPage_Controller extends Page_Controller {
+
+	public function init() {
+		parent::init();
+
+		Yepnope::clear_test('MyFiles'); // Clear the test with id 'MyFiles'
+	}
+
+}
+```
+
+###Resource callback labels:###
+Since version 1.5 of yepnope.js, keys to be used in callbacks are automatically generated from the basename of the file. If you require keys to be used in your callback functions, please use these generated keys as per the example below:
+
+```js
+yepnope({
+	load: ["https:/­/my-cdn.com/jquery.min.js?v=1.7.1", "https:/­/my-cdn.com/jquery-ui.min.js?v=1.8.16"],
+	callback: {
+		"jquery.min.js": function () {
+			console.log("jquery loaded!");
+		},
+		"jquery-ui.min.js": function () {
+			console.log("jquery-ui loaded!");
+		}
+	}
+});
+```
 
 ###Customise:###
 If you're already using yepnope or modernizr and don't need to include yepnope.js, you can remove the requirement (or set it to use a different script) with the following:
