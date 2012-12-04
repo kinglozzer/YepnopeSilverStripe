@@ -70,22 +70,78 @@ class Yepnope extends Requirements {
 		self::backend()->clear_test($id);
 	}
 
+	/**
+	 * Set error timeout length in milliseconds
+	 *
+	 * @var int $ms The time in milliseconds for error timeout
+	 */
+	public static function set_timeout($ms) {
+		self::backend()->set_timeout($ms);
+	}
+
 }
 
 class Yepnope_Backend extends Requirements_Backend {
 
+	/**
+	 * An array of yepnope tests.
+	 *
+	 * Standard yepnope 'loads' are also contained in this array, with the 'test' key
+	 * set to null. Tests are stored in the following format:
+	 *
+	 * array(
+	 *	'test' => $test,
+	 *	'yep' => $yep,
+	 *	'nope' => $nope,
+	 *	'load' => $load,
+	 *	'callback' => $callback,
+	 *	'complete' => $complete,
+	 *	'id' => $id
+	 * );
+	 */ 
 	protected $yepnopeTests = array();
 
+	/**
+	 * The location of the yepnope script, or false if not required
+	 */
 	protected $yepnopeScript = 'yepnopesilverstripe/javascript/yepnope.1.5.4-min.js';
 
+	/**
+	 * The time in milliseconds for yepnope error timeout, or false to leave default
+	 */
+	protected $yepnopeTimeout = false;
+
+	/**
+	 * The script ID of the Requirements::customScript() added
+	 *
+	 * Used to wipe existing yepnope scripts to avoid duplication of files
+	 */
 	public $customScriptID = null;
 
 	public function set_yepnope($file) {
 		$this->yepnopeScript = $file;
 	}
 
+	/**
+	 * Get the path to the yepnope script
+	 *
+	 * @return string|bool
+	 */
 	public function get_yepnope() {
 		return $this->yepnopeScript;
+	}
+
+	public function set_timeout($ms) {
+		$this->yepnopeTimeout = (int) $ms;
+	}
+
+	/**
+	 * Get the error timeout length
+	 *
+	 * @return string|bool
+	 */
+	public function get_timeout() {
+		return $this->yepnopeTimeout;
 	}
 
 	public function add_files($files, $callback=null, $complete=null, $id=null) {
@@ -105,11 +161,15 @@ class Yepnope_Backend extends Requirements_Backend {
 		$this->evalYepnope();
 	}
 
+	/**
+	 * Generates an identifier for a test from a list of files
+	 *
+	 * @return str $id The ID string
+	 */
 	public function generateIdentifier($files) {
 		$tmpArray = array();
 		foreach ($files as $file) {
-			$filename = basename($file);
-			$tmpArray[] = $filename;
+			if ($filename = basename($file)) $tmpArray[] = $filename;
 		}
 		return implode('|', $tmpArray);
 	}
@@ -144,11 +204,23 @@ class Yepnope_Backend extends Requirements_Backend {
 		$this->evalYepnope();
 	}
 
+	/**
+	 * Evaluate yepnope conditions and build Javascript to be output in template
+	 *
+	 * The script wipes any existing yepnope scripts (to avoid duplication) by calling
+	 * Requirements_Backend::clear($id) - where $id is the script's unique identifier
+	 * in the format "yepnope-(current time)"
+	 *
+	 * @return void
+	 */
 	public function evalYepnope() {
+		$str = "";
+
 		if ($yepnope = $this->get_yepnope()) Requirements::javascript($yepnope);
+		if ($timeout = $this->get_timeout()) $str .= "yepnope.errorTimeout = " . $timeout . ";\n";
 		if ($this->customScriptID) $this->clear($this->customScriptID);
 
-		$str = "yepnope([{\n";	
+		$str .= "yepnope([{\n";	
 		$allTests = array();
 
 		foreach ($this->yepnopeTests as $property) {
