@@ -169,6 +169,21 @@ class Page_Controller extends ContentController {
 }
 ```
 
+If you wish to specify a custom error timeout length (yepnope's default is 10 seconds) you can use the `set_timeout()` method. Note that the time is set in milliseconds:
+
+```php
+class Page_Controller extends ContentController {
+
+	public function init() {
+		parent::init();
+		
+		Yepnope::add_files('themes/yourtheme/js/yourjavascript.js');
+		Yepnope::set_timeout(2000); // Sets error timeout to be 2 seconds
+	}
+
+}
+```
+
 ###Tips:###
 If your _tests_, _callback_ functions or _complete_ functions are quite long, then putting them in a PHP file is ugly and hard to maintain. One alternative is to store the raw javascript in a template (be sure to do a _?flush=1_ after creating any templates) and load it using the following method:
 
