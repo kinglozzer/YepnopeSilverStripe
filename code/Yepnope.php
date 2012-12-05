@@ -1,6 +1,6 @@
 <?php
 /**
-* 
+*
 */
 class Yepnope extends Requirements {
 
@@ -10,7 +10,7 @@ class Yepnope extends Requirements {
 	 * @var Yepnope
 	 */
 	private static $backend = null;
-	
+
 	/**
 	 * Returns an instance of Yepnope_Backend
 	 *
@@ -98,13 +98,13 @@ class Yepnope_Backend extends Requirements_Backend {
 	 *	'complete' => $complete,
 	 *	'id' => $id
 	 * );
-	 */ 
+	 */
 	protected $yepnopeTests = array();
 
 	/**
 	 * The location of the yepnope script, or false if not required
 	 */
-	protected $yepnopeScript = 'yepnopesilverstripe/javascript/yepnope.1.5.4-min.js';
+	protected $yepnopeScript = 'YepnopeSilverStripe/javascript/yepnope.1.5.4-min.js';
 
 	/**
 	 * The time in milliseconds for yepnope error timeout, or false to leave default
@@ -156,7 +156,7 @@ class Yepnope_Backend extends Requirements_Backend {
 		);
 
 		$id = ($id) ? $id : $this->generateIdentifier($files);
-		
+
 		$this->yepnopeTests[$id] = $yepnopeTest;
 		$this->evalYepnope();
 	}
@@ -186,8 +186,8 @@ class Yepnope_Backend extends Requirements_Backend {
 	) {
 		if ( ! $yep && ! $nope) {
 			user_error(
-				"Yepnope::add_test(): 
-				You need to specify a 'yep' or a 'nope' for your test.", 
+				"Yepnope::add_test():
+				You need to specify a 'yep' or a 'nope' for your test.",
 				E_USER_ERROR
 			);
 		}
@@ -199,7 +199,7 @@ class Yepnope_Backend extends Requirements_Backend {
 		$yepnopeTest = compact("test", "yep", "nope", "load", "callback", "complete");
 
 		$id = ($id) ? $id : $this->generateIdentifier(array_merge($yep, $nope, $load));
-		
+
 		$this->yepnopeTests[$id] = $yepnopeTest;
 		$this->evalYepnope();
 	}
@@ -220,7 +220,7 @@ class Yepnope_Backend extends Requirements_Backend {
 		if ($timeout = $this->get_timeout()) $str .= "yepnope.errorTimeout = " . $timeout . ";\n";
 		if ($this->customScriptID) $this->clear($this->customScriptID);
 
-		$str .= "yepnope([{\n";	
+		$str .= "yepnope([{\n";
 		$allTests = array();
 
 		foreach ($this->yepnopeTests as $property) {
@@ -239,7 +239,7 @@ class Yepnope_Backend extends Requirements_Backend {
 			$allTests[] = implode(",\n", $tempArray) . "\n";
 		}
 
-		$str .= implode("}, {\n", $allTests) . "}]);";	
+		$str .= implode("}, {\n", $allTests) . "}]);";
 		$this->customScriptID = "yepnope-" . time();
 		Requirements::customScript($str, $this->customScriptID);
 	}
