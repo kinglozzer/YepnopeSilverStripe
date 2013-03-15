@@ -104,7 +104,7 @@ class Yepnope_Backend extends Requirements_Backend {
 	/**
 	 * The location of the yepnope script, or false if not required
 	 */
-	protected $yepnopeScript = 'YepnopeSilverStripe/javascript/yepnope.1.5.4-min.js';
+	protected $yepnopeScript = false;
 
 	/**
 	 * The time in milliseconds for yepnope error timeout, or false to leave default
@@ -117,6 +117,13 @@ class Yepnope_Backend extends Requirements_Backend {
 	 * Used to wipe existing yepnope scripts to avoid duplication of files
 	 */
 	public $customScriptID = null;
+
+	/**
+	 * Use __construct() for setting default path as you can't concatenate in properties
+	 */
+	public function __construct() {
+		$this->yepnopeScript = YEPNOPESILVERSTRIPE_BASE . '/javascript/yepnope.1.5.4-min.js';
+	}
 
 	public function set_yepnope($file) {
 		$this->yepnopeScript = $file;

@@ -19,7 +19,7 @@ require: "kinglozzer/yepnopesilverstripe": "dev-master"
 
 ###Download:###
 
-Simply clone or download this repository and put it in a folder called 'YepnopeSilverStripe' in your SilverStripe installation folder, then run `dev/build`.
+Simply clone or download this repository and put it in a folder called 'yepnopesilverstripe' in your SilverStripe installation folder, then run `dev/build`.
 
 ##Examples:##
 
