@@ -19,6 +19,5 @@
 	},
 	"require": {
 		"silverstripe/framework": ">=3.0"
-	},
-	"target-dir": "YepnopeSilverStripe"
+	}
 }
