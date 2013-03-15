@@ -1,0 +1,24 @@
+{
+	"name": "kinglozzer/yepnopesilverstripe",
+	"description": "A simple way of adding files to yepnope.js in SilverStripe",
+	"type": "silverstripe-module",
+	"homepage": "https://github.com/kinglozzer/YepnopeSilverStripe",
+	"keywords": ["silverstripe", "yepnope"],
+	"authors": [
+		{
+			"name": "Loz Calver",
+			"email": "lozcalver@bigfork.co.uk"
+		},
+		{
+			"name": "Colin Richardson",
+			"email": "colinrichardson@bigfork.co.uk"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/kinglozzer/YepnopeSilverStripe/issues"
+	},
+	"require": {
+		"silverstripe/framework": ">=3.0"
+	},
+	"target-dir": "YepnopeSilverStripe"
+}
