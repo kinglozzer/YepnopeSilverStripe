@@ -11,7 +11,15 @@ _"yepnope is an asynchronous conditional resource loader that's super-fast, and 
 
 ##Installation:##
 
-Simply clone or download this repository and put it in a folder called 'yepnopesilverstripe' in your SilverStripe installation folder, then run `dev/build`.
+###Composer:###
+
+```
+require: "kinglozzer/yepnopesilverstripe": "dev-master"
+```
+
+###Download:###
+
+Simply clone or download this repository and put it in a folder called 'YepnopeSilverStripe' in your SilverStripe installation folder, then run `dev/build`.
 
 ##Examples:##
 
@@ -23,7 +31,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-		
+
 		/* Add a single file */
 		Yepnope::add_files('themes/yourtheme/js/yourjavascript.js');
 
@@ -47,7 +55,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-	
+
 		$myFiles = array(
 			'themes/yourtheme/js/filea.js',
 			'themes/yourtheme/js/fileb.js'
@@ -88,7 +96,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-	
+
 		Yepnope::add_test(
 			'Modernizr.geolocation',			// Test if geolocation functionality exists
 			'regular-styles.css',				// If it does (test returns true), load regular style
@@ -113,7 +121,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-	
+
 		$myFiles = array(
 			'themes/yourtheme/js/filea.js',
 			'themes/yourtheme/js/fileb.js'
@@ -161,7 +169,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-		
+
 		Yepnope::set_yepnope(false) // Removes built-in requirement for yepnope.js script
 		Yepnope::set_yepnope('themes/yourtheme/js/modernizr.min.js'); // Set to use a custom script
 	}
@@ -176,7 +184,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-		
+
 		Yepnope::add_files('themes/yourtheme/js/yourjavascript.js');
 		Yepnope::set_timeout(2000); // Sets error timeout to be 2 seconds
 	}
@@ -192,7 +200,7 @@ class Page_Controller extends ContentController {
 
 	public function init() {
 		parent::init();
-		
+
 		Yepnope::add_files('themes/simple/javascript/somescript.js', $this->renderWith('MyCallback'));
 	}
 
