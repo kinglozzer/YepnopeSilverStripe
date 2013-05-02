@@ -199,9 +199,9 @@ class Yepnope_Backend extends Requirements_Backend {
 			);
 		}
 
-		if(is_string($yep) || ! $yep) $yep = array($yep);
-		if(is_string($nope) || ! $nope) $nope = array($nope);
-		if(is_string($load) || ! $load) $load = array($load);
+		$yep = (array) $yep;
+		$nope = (array) $nope;
+		$load = (array) $load;
 
 		$yepnopeTest = compact("test", "yep", "nope", "load", "callback", "complete");
 
@@ -233,7 +233,7 @@ class Yepnope_Backend extends Requirements_Backend {
 		foreach ($this->yepnopeTests as $property) {
 			$tempArray = array();
 			foreach ($property as $name=>$value) {
-				if ($value !== null) {
+				if ( ! empty($value)) {
 					$tmpStr = "\t" . $name . ": ";
 					if (is_array($value)) {
 						$tmpStr .= "['" . implode("', '", $value) . "']";
