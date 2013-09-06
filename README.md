@@ -46,6 +46,15 @@ class Page_Controller extends ContentController {
 
 }
 ```
+The above example would output the following:
+
+```js
+yepnope([{
+	load: ['themes/yourtheme/js/yourjavascript.js']
+}, {
+	load: ['themes/yourtheme/css/adminstyles.css', 'themes/yourtheme/css/extrauserstyles.css']
+}]); 
+```
 
 ###Callbacks:###
 You can specify a _callback_ function (called for each file that's loaded) and/or a _complete_ function (called after all files have been loaded) by passing second and third arguments to the `add_files()` function:
@@ -72,6 +81,15 @@ class Page_Controller extends ContentController {
 	}
 
 }
+```
+The above example would output the following:
+
+```js
+yepnope([{
+	load: ['themes/yourtheme/js/filea.js', 'themes/yourtheme/js/fileb.js'],
+	callback: console.log('loaded file'),
+	complete: console.log('loaded all files')
+}]); 
 ```
 
 ###Tests:###
@@ -108,6 +126,18 @@ class Page_Controller extends ContentController {
 	}
 
 }
+```
+The above example would output the following:
+
+```js
+yepnope([{
+	test: Modernizr.geolocation,
+	yep: ['regular-styles.css'],
+	nope: ['geolocation-polyfill.js'],
+	load: ['standardfunctions.js'],
+	callback: console.log('loaded file'),
+	complete: console.log('all files loaded')
+}]); 
 ```
 
 The lists of files passed to the function can be either strings, arrays or `null` (for example, if no extra files are needed for the 'yep' argument).
@@ -208,9 +238,3 @@ class Page_Controller extends ContentController {
 ```
 
 MyCallback.ss would then contain your raw Javascript (not wrapped in any HTML tags or anything).
-
-##TODO##
-
-* Add support for prefixes (!css, !timeout etc)
-* General cleaning, tidying and refactoring of code
-* More testing

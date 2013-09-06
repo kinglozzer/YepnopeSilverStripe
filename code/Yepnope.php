@@ -1,20 +1,21 @@
 <?php
 /**
-*
-*/
+ * The main Yepnope class - all function calls invoke Yepnope_Backend in the same way
+ * that the Requirements class does
+ */
 class Yepnope extends Requirements {
 
 	/**
 	 * Instance of yepnope for storage
-	 *
-	 * @var Yepnope
+	 * 
+	 * @var Yepnope_Backend|null
 	 */
 	private static $backend = null;
 
 	/**
 	 * Returns an instance of Yepnope_Backend
 	 *
-	 * @return object $backend
+	 * @return Yepnope_Backend $backend
 	 */
 	public static function backend() {
 		if(!self::$backend) {
@@ -27,6 +28,7 @@ class Yepnope extends Requirements {
 	 * Set a custom file to include for 'yepnope', such as modernizr or false if not required
 	 *
 	 * @param string|boolean $file
+	 * @return void
 	 */
 	public static function set_yepnope($file) {
 		self::backend()->set_yepnope($file);
@@ -36,9 +38,10 @@ class Yepnope extends Requirements {
 	 * Add files to be output by yepnope
 	 *
 	 * @param string|array $files
-	 * @param string $callback A function called for each resource loaded
-	 * @param string $complete A function called once when all resources have been loaded
-	 * @param string $id A unique identifier for the test
+	 * @param string|null $callback A function called for each resource loaded
+	 * @param string|null $complete A function called once when all resources have been loaded
+	 * @param string|null $id A unique identifier for the test
+	 * @return void
 	 */
 	public static function add_files($files, $callback=null, $complete=null, $id=null) {
 		self::backend()->add_files($files, $callback, $complete, $id);
@@ -48,12 +51,13 @@ class Yepnope extends Requirements {
 	 * Add a yepnope test
 	 *
 	 * @param string $test The test to be run
-	 * @param string|array $yep File(s) to be loaded if the test passes
-	 * @param string|array $nope File(s) to be loaded if the test fails
-	 * @param string|array $load File(s) to be loaded regardless of the test outcome
-	 * @param string $callback A function called for each resource loaded
-	 * @param string $complete A function called once when all resources have been loaded
-	 * @param string $id A unique identifier for the test
+	 * @param string|array|null $yep File(s) to be loaded if the test passes
+	 * @param string|array|null $nope File(s) to be loaded if the test fails
+	 * @param string|array|null $load File(s) to be loaded regardless of the test outcome
+	 * @param string|null $callback A function called for each resource loaded
+	 * @param string|null $complete A function called once when all resources have been loaded
+	 * @param string|null $id A unique identifier for the test
+	 * @return void
 	 */
 	public static function add_test($test, $yep=null, $nope=null, $load=null,
 		$callback=null, $complete=null, $id=null
@@ -65,6 +69,7 @@ class Yepnope extends Requirements {
 	 * Clear a yepnope test
 	 *
 	 * @param string $id The identifier of the test
+	 * @return void
 	 */
 	public static function clear_test($id) {
 		self::backend()->clear_test($id);
@@ -73,7 +78,8 @@ class Yepnope extends Requirements {
 	/**
 	 * Set error timeout length in milliseconds
 	 *
-	 * @var int $ms The time in milliseconds for error timeout
+	 * @param int $ms The time in milliseconds for error timeout
+	 * @return void
 	 */
 	public static function set_timeout($ms) {
 		self::backend()->set_timeout($ms);
@@ -81,6 +87,9 @@ class Yepnope extends Requirements {
 
 }
 
+/**
+ * The Yepnope equivalent of Requirements_Backend. All the actual logic takes place here.
+ */
 class Yepnope_Backend extends Requirements_Backend {
 
 	/**
@@ -98,33 +107,46 @@ class Yepnope_Backend extends Requirements_Backend {
 	 *	'complete' => $complete,
 	 *	'id' => $id
 	 * );
+	 * 
+	 * @var array
 	 */
 	protected $yepnopeTests = array();
 
 	/**
 	 * The location of the yepnope script, or false if not required
+	 * 
+	 * @var boolean|string
 	 */
 	protected $yepnopeScript = false;
 
 	/**
 	 * The time in milliseconds for yepnope error timeout, or false to leave default
+	 * 
+	 * @var boolean|string
 	 */
 	protected $yepnopeTimeout = false;
 
 	/**
-	 * The script ID of the Requirements::customScript() added
-	 *
-	 * Used to wipe existing yepnope scripts to avoid duplication of files
+	 * The script ID of the Requirements::customScript() added. Used to wipe existing
+	 * yepnope scripts to avoid duplication of files
+	 * 
+	 * @param string|null
 	 */
 	public $customScriptID = null;
 
 	/**
 	 * Use __construct() for setting default path as you can't concatenate in properties
+	 * 
+	 * @return self
 	 */
 	public function __construct() {
 		$this->yepnopeScript = YEPNOPESILVERSTRIPE_BASE . '/javascript/yepnope.1.5.4-min.js';
 	}
 
+	/**
+	 * @param string $file
+	 * @return void
+	 */
 	public function set_yepnope($file) {
 		$this->yepnopeScript = $file;
 	}
@@ -138,6 +160,10 @@ class Yepnope_Backend extends Requirements_Backend {
 		return $this->yepnopeScript;
 	}
 
+	/**
+	 * @param int $ms
+	 * @return void
+	 */
 	public function set_timeout($ms) {
 		$this->yepnopeTimeout = (int) $ms;
 	}
@@ -151,6 +177,13 @@ class Yepnope_Backend extends Requirements_Backend {
 		return $this->yepnopeTimeout;
 	}
 
+	/**
+	 * @param string|array $files
+	 * @param string|null $callback A function called for each resource loaded
+	 * @param string|null $complete A function called once when all resources have been loaded
+	 * @param string|null $id A unique identifier for the test
+	 * @return void
+	 */
 	public function add_files($files, $callback=null, $complete=null, $id=null) {
 		if(is_string($files)) $files = array($files);
 		$yepnopeTest = array(
@@ -171,7 +204,8 @@ class Yepnope_Backend extends Requirements_Backend {
 	/**
 	 * Generates an identifier for a test from a list of files
 	 *
-	 * @return str $id The ID string
+	 * @param array $files
+	 * @return string $id The ID string
 	 */
 	public function generateIdentifier($files) {
 		$tmpArray = array();
@@ -181,6 +215,10 @@ class Yepnope_Backend extends Requirements_Backend {
 		return implode('|', $tmpArray);
 	}
 
+	/**
+	 * @param string $id
+	 * @return void
+	 */
 	public function clear_test($id) {
 		$tests = $this->yepnopeTests;
 		unset($tests[$id]);
@@ -188,6 +226,16 @@ class Yepnope_Backend extends Requirements_Backend {
 		$this->evalYepnope();
 	}
 
+	/**
+	 * @param string $test The test to be run
+	 * @param string|array|null $yep File(s) to be loaded if the test passes
+	 * @param string|array|null $nope File(s) to be loaded if the test fails
+	 * @param string|array|null $load File(s) to be loaded regardless of the test outcome
+	 * @param string|null $callback A function called for each resource loaded
+	 * @param string|null $complete A function called once when all resources have been loaded
+	 * @param string|null $id A unique identifier for the test
+	 * @return void
+	 */
 	public function add_test($test, $yep=null, $nope=null, $load=null,
 		$callback=null, $complete=null, $id=null
 	) {
