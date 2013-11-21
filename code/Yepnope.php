@@ -3,6 +3,7 @@
  * The main Yepnope class - all function calls invoke Yepnope_Backend in the same way
  * that the Requirements class does
  */
+
 class Yepnope extends Requirements {
 
 	/**
@@ -32,6 +33,24 @@ class Yepnope extends Requirements {
 	 */
 	public static function set_yepnope($file) {
 		self::backend()->set_yepnope($file);
+	}
+
+	/**
+	 * Set whether we should automatically evaluate Yepnope
+	 * 
+	 * @return void
+	 */
+	public static function set_automatically_evaluate($bool) {
+		self::backend()->set_automatically_evaluate($bool);
+	}
+
+	/**
+	 * Return whether we should automatically evaluate Yepnope. Used in YepnopeControllerExtension
+	 * 
+	 * @return boolean
+	 */
+	public static function get_automatically_evaluate() {
+		return self::backend()->get_automatically_evaluate();
 	}
 
 	/**
@@ -66,6 +85,16 @@ class Yepnope extends Requirements {
 	}
 
 	/**
+	 * Get a yepnope test object
+	 * 
+	 * @param string $id The identifier of the test
+	 * @return YepnopeTestObject|null
+	 */
+	public static function get_test($id) {
+		return self::backend()->get_test($id);
+	}
+
+	/**
 	 * Clear a yepnope test
 	 *
 	 * @param string $id The identifier of the test
@@ -85,6 +114,16 @@ class Yepnope extends Requirements {
 		self::backend()->set_timeout($ms);
 	}
 
+	/**
+	 * Evaluate Yepnope tests specified and set Requirements::customScript() with the
+	 * produced JavaScript
+	 * 
+	 * @return void
+	 */
+	public static function eval_yepnope($customScriptID = 'yepnope') {
+		self::backend()->evalYepnope($customScriptID);
+	}
+
 }
 
 /**
@@ -92,25 +131,10 @@ class Yepnope extends Requirements {
  */
 class Yepnope_Backend extends Requirements_Backend {
 
-	/**
-	 * An array of yepnope tests.
-	 *
-	 * Standard yepnope 'loads' are also contained in this array, with the 'test' key
-	 * set to null. Tests are stored in the following format:
-	 *
-	 * array(
-	 *	'test' => $test,
-	 *	'yep' => $yep,
-	 *	'nope' => $nope,
-	 *	'load' => $load,
-	 *	'callback' => $callback,
-	 *	'complete' => $complete,
-	 *	'id' => $id
-	 * );
-	 * 
-	 * @var array
+	/** 
+	 * @var ArrayList
 	 */
-	protected $yepnopeTests = array();
+	protected $yepnopeTests;
 
 	/**
 	 * The location of the yepnope script, or false if not required
@@ -120,19 +144,16 @@ class Yepnope_Backend extends Requirements_Backend {
 	protected $yepnopeScript = false;
 
 	/**
+	 * @var boolean
+	 */
+	protected $automaticallyEvaluate = true;
+
+	/**
 	 * The time in milliseconds for yepnope error timeout, or false to leave default
 	 * 
 	 * @var boolean|string
 	 */
 	protected $yepnopeTimeout = false;
-
-	/**
-	 * The script ID of the Requirements::customScript() added. Used to wipe existing
-	 * yepnope scripts to avoid duplication of files
-	 * 
-	 * @param string|null
-	 */
-	public $customScriptID = null;
 
 	/**
 	 * Use __construct() for setting default path as you can't concatenate in properties
@@ -141,6 +162,7 @@ class Yepnope_Backend extends Requirements_Backend {
 	 */
 	public function __construct() {
 		$this->yepnopeScript = YEPNOPESILVERSTRIPE_BASE . '/javascript/yepnope.1.5.4-min.js';
+		$this->yepnopeTests = new ArrayList();
 	}
 
 	/**
@@ -152,12 +174,24 @@ class Yepnope_Backend extends Requirements_Backend {
 	}
 
 	/**
-	 * Get the path to the yepnope script
-	 *
 	 * @return string|bool
 	 */
 	public function get_yepnope() {
 		return $this->yepnopeScript;
+	}
+
+	/** 
+	 * @return void
+	 */
+	public function set_automatically_evaluate($bool) {
+		$this->automaticallyEvaluate = (bool) $bool;
+	}
+
+	/** 
+	 * @return boolean
+	 */
+	public function get_automatically_evaluate() {
+		return $this->automaticallyEvaluate;
 	}
 
 	/**
@@ -169,8 +203,6 @@ class Yepnope_Backend extends Requirements_Backend {
 	}
 
 	/**
-	 * Get the error timeout length
-	 *
 	 * @return string|bool
 	 */
 	public function get_timeout() {
@@ -186,19 +218,11 @@ class Yepnope_Backend extends Requirements_Backend {
 	 */
 	public function add_files($files, $callback=null, $complete=null, $id=null) {
 		if(is_string($files)) $files = array($files);
-		$yepnopeTest = array(
-			'test' => null,
-			'yep' => null,
-			'nope' => null,
-			'load' => $files,
-			'callback' => $callback,
-			'complete' => $complete
-		);
 
 		$id = ($id) ? $id : $this->generateIdentifier($files);
+		$testObject = YepnopeTestObject::create($id, null, null, null, $files, $callback, $complete);
 
-		$this->yepnopeTests[$id] = $yepnopeTest;
-		$this->evalYepnope();
+		$this->yepnopeTests->push($testObject);
 	}
 
 	/**
@@ -217,13 +241,18 @@ class Yepnope_Backend extends Requirements_Backend {
 
 	/**
 	 * @param string $id
+	 * @return YepnopeTestObject|null
+	 */
+	public function get_test($id) {
+		return $this->yepnopeTests->find('id', $id);
+	}
+
+	/**
+	 * @param string $id
 	 * @return void
 	 */
 	public function clear_test($id) {
-		$tests = $this->yepnopeTests;
-		unset($tests[$id]);
-		$this->yepnopeTests = $tests;
-		$this->evalYepnope();
+		$this->yepnopeTests = $this->yepnopeTests->exclude('id', $id);
 	}
 
 	/**
@@ -240,48 +269,38 @@ class Yepnope_Backend extends Requirements_Backend {
 		$callback=null, $complete=null, $id=null
 	) {
 		if ( ! $yep && ! $nope) {
-			user_error(
-				"Yepnope::add_test():
-				You need to specify a 'yep' or a 'nope' for your test.",
-				E_USER_ERROR
-			);
+			throw new InvalidArgumentException("Yepnope::add_test(): You need to specify a 'yep' or"
+				. " a 'nope' for your test.");
 		}
 
 		$yep = (array) $yep;
 		$nope = (array) $nope;
 		$load = (array) $load;
 
-		$yepnopeTest = compact("test", "yep", "nope", "load", "callback", "complete");
-
 		$id = ($id) ? $id : $this->generateIdentifier(array_merge($yep, $nope, $load));
+		$testObject = YepnopeTestObject::create($id, $test, $yep, $nope, $load, $callback, $complete);
 
-		$this->yepnopeTests[$id] = $yepnopeTest;
-		$this->evalYepnope();
+		$this->yepnopeTests->push($testObject);
 	}
 
 	/**
 	 * Evaluate yepnope conditions and build Javascript to be output in template
 	 *
-	 * The script wipes any existing yepnope scripts (to avoid duplication) by calling
-	 * Requirements_Backend::clear($id) - where $id is the script's unique identifier
-	 * in the format "yepnope-(current time)"
-	 *
 	 * @return void
 	 */
-	public function evalYepnope() {
+	public function evalYepnope($customScriptID) {
 		$str = "";
 
 		if ($yepnope = $this->get_yepnope()) Requirements::javascript($yepnope);
 		if ($timeout = $this->get_timeout()) $str .= "yepnope.errorTimeout = " . $timeout . ";\n";
-		if ($this->customScriptID) $this->clear($this->customScriptID);
 
 		$str .= "yepnope([{\n";
 		$allTests = array();
-
-		foreach ($this->yepnopeTests as $property) {
+		
+		foreach ($this->yepnopeTests->toArray() as $testObject) {
 			$tempArray = array();
-			foreach ($property as $name=>$value) {
-				if ( ! empty($value)) {
+			foreach ($testObject->toArray() as $name => $value) {
+				if ( ! empty($value) && $name !== 'id') {
 					$tmpStr = "\t" . $name . ": ";
 					if (is_array($value)) {
 						$tmpStr .= "['" . implode("', '", $value) . "']";
@@ -295,8 +314,8 @@ class Yepnope_Backend extends Requirements_Backend {
 		}
 
 		$str .= implode("}, {\n", $allTests) . "}]);";
-		$this->customScriptID = "yepnope-" . time();
-		Requirements::customScript($str, $this->customScriptID);
+
+		Requirements::customScript($str, $customScriptID);
 	}
 
 }

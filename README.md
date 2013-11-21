@@ -142,6 +142,45 @@ yepnope([{
 
 The lists of files passed to the function can be either strings, arrays or `null` (for example, if no extra files are needed for the 'yep' argument).
 
+###Override test parameters:###
+If you specify an indentifiers for your tests, you can override individual parameters on an already existing test. The following example would use the 'complete' function `pageInit()` on pages with the 'Page' pagetype, and `contactPageInit()` on pages with the 'ContactPage' pagetype.
+
+```php
+// Page.php
+class Page_Controller extends ContentController {
+
+	public function init() {
+		parent::init();
+
+		$myFiles = array('themes/yourtheme/js/filea.js');
+
+		Yepnope::add_files($myFiles, null, 'function() { pageInit(); }', 'default'); // Set the id 'default'
+	}
+
+}
+
+// ContactPage.php
+class ContactPage_Controller extends Page_Controller {
+
+	public function init() {
+		parent::init();
+
+		Yepnope::get_test('default')->setComplete('function() { contactPageInit(); }'); // Override 'complete' function
+	}
+
+}
+```
+
+The list of methods that can be used when overriding test properties is as follows:
+
+- `[get/set]ID()`
+- `[get/set]Test()`
+- `[get/set]Yep()`
+- `[get/set]Nope()`
+- `[get/set]Load()`
+- `[get/set]Callback()`
+- `[get/set]Complete()`
+
 ###Clear files & tests:###
 Both the `add_files()` and `add_test()` methods take an optional, last argument (4th and 7th arguments respectively) for a unique identifier. This identifier can then be used to remove a test on certain pages. In the example below, let's assume you have files you want to load on every page _except_ pages with the 'ContactPage' page type:
 
@@ -222,6 +261,8 @@ class Page_Controller extends ContentController {
 }
 ```
 
+YepnopeSilverStripe automatically evaluates tests after `Controller::init()`, using the `Controller->onAfterInit()` extension hook. This behaviour can be disabled by calling `Yepnope::set_automatically_evaluate(false);`. You can then manually evaluate your Yepnope tests by calling `Yepnope::eval_yepnope()` with one, optional parameter for a 'customScriptID' (YepnopeSilverStripe uses `Requirements::customScript()`).
+
 ###Tips:###
 If your _tests_, _callback_ functions or _complete_ functions are quite long, then putting them in a PHP file is ugly and hard to maintain. One alternative is to store the raw javascript in a template (be sure to do a _?flush=1_ after creating any templates) and load it using the following method:
 
@@ -238,3 +279,8 @@ class Page_Controller extends ContentController {
 ```
 
 MyCallback.ss would then contain your raw Javascript (not wrapped in any HTML tags or anything).
+
+###Todo:###
+
+- Unit tests
+- Update `evalYepnope()` to use a template or something instead of building a string
