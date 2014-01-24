@@ -1,5 +1,5 @@
 #YepnopeSilverStripe#
-[![Build Status](https://travis-ci.org/kinglozzer/YepnopeSilverStripe.png?branch=master)](https://travis-ci.org/kinglozzer/YepnopeSilverStripe)
+[![Build Status](https://travis-ci.org/kinglozzer/YepnopeSilverStripe.png?branch=master)](https://travis-ci.org/kinglozzer/YepnopeSilverStripe)[![Latest Stable Version](https://poser.pugx.org/kinglozzer/yepnopesilverstripe/v/stable.png)](https://packagist.org/packages/kinglozzer/yepnopesilverstripe)[![License](https://poser.pugx.org/kinglozzer/yepnopesilverstripe/license.png)](https://packagist.org/packages/kinglozzer/yepnopesilverstripe)
 
 A module to allow loading of Javascript & CSS using the conditional loader [yepnopejs](http://yepnopejs.com).
 
