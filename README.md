@@ -1,4 +1,5 @@
 #YepnopeSilverStripe#
+[![Build Status](https://travis-ci.org/kinglozzer/YepnopeSilverStripe.png?branch=master)](https://travis-ci.org/kinglozzer/YepnopeSilverStripe)
 
 A module to allow loading of Javascript & CSS using the conditional loader [yepnopejs](http://yepnopejs.com).
 
