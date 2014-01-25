@@ -294,28 +294,50 @@ class Yepnope_Backend extends Requirements_Backend {
 		if ($yepnope = $this->get_yepnope()) Requirements::javascript($yepnope);
 		if ($timeout = $this->get_timeout()) $str .= "yepnope.errorTimeout = " . $timeout . ";\n";
 
-		$str .= "yepnope([{\n";
-		$allTests = array();
-		
-		foreach ($this->yepnopeTests->toArray() as $testObject) {
-			$tempArray = array();
-			foreach ($testObject->toArray() as $name => $value) {
-				if ( ! empty($value) && $name !== 'id') {
-					$tmpStr = "\t" . $name . ": ";
-					if (is_array($value)) {
-						$tmpStr .= "['" . implode("', '", $value) . "']";
-					} else {
-						$tmpStr .= $value;
-					}
-					$tempArray[] = $tmpStr;
-				}
-			}
-			$allTests[] = implode(",\n", $tempArray) . "\n";
-		}
-
-		$str .= implode("}, {\n", $allTests) . "}]);";
+		$data = $this->convertToObject($this->yepnopeTests->toArray());
+		$str .= 'yepnope(' . $data . ');';
 
 		Requirements::customScript($str, $customScriptID);
+	}
+
+	/**
+	 * Convert tests to a JavaScript object. Somewhat a "patched" version of
+	 * json_encode, as we don't want functions wrapped in strings
+	 * 
+	 * @param array
+	 * @return string
+	 */
+	protected function convertToObject($testArray) {
+		$i = 0;
+		$data = $replace = $originals = array();
+
+		foreach ($testArray as $testObject) {
+			$test = $testObject->toArray();
+
+			foreach ($test as $key => &$val) {
+				// Don't output test ID or empty values
+				if ($key === 'id' || empty($val)) {
+					unset($test[$key]);
+				// json_encode wraps functions in quotes, so store them for replacing later
+				} else if (in_array($key, array('test', 'callback', 'complete'))) {
+					$originals[] = $val;
+					$val = '%' . $i . $key . '%'; // unique ID so tests don't overwrite each other
+					$replace[] = '"' . $val . '"';
+				}
+			}
+
+			$data[] = $test;
+			$i++;
+		}
+		
+		// Only >=5.4 get pretty json
+		if (version_compare(phpversion(), '5.4.0', '>=')) {
+			$data = json_encode($data, JSON_PRETTY_PRINT);
+		} else {
+			$data = json_encode($data);
+		}
+
+		return str_replace($replace, $originals, $data);
 	}
 
 }

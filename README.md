@@ -143,8 +143,40 @@ yepnope([{
 
 The lists of files passed to the function can be either strings, arrays or `null` (for example, if no extra files are needed for the 'yep' argument).
 
+###Clear files & tests:###
+Both the `add_files()` and `add_test()` methods take an optional, last argument (4th and 7th arguments respectively) for a unique identifier. This identifier can then be used to remove a test on certain pages. In the example below, let's assume you have files you want to load on every page _except_ pages with the 'ContactPage' page type:
+
+```php
+// Page.php
+class Page_Controller extends ContentController {
+
+	public function init() {
+		parent::init();
+
+		$myFiles = array(
+			'themes/yourtheme/js/filea.js',
+			'themes/yourtheme/js/fileb.js'
+		);
+
+		Yepnope::add_files($myFiles, null, null, 'MyFiles'); // Set the id 'MyFiles'
+	}
+
+}
+
+// ContactPage.php
+class ContactPage_Controller extends Page_Controller {
+
+	public function init() {
+		parent::init();
+
+		Yepnope::clear_test('MyFiles'); // Clear the test with id 'MyFiles'
+	}
+
+}
+```
+
 ###Override test parameters:###
-If you specify an indentifiers for your tests, you can override individual parameters on an already existing test. The following example would use the 'complete' function `pageInit()` on pages with the 'Page' pagetype, and `contactPageInit()` on pages with the 'ContactPage' pagetype.
+If you specify indentifiers for your tests, you can override individual parameters on an already existing test. The following example would use the 'complete' function `pageInit()` on pages with the 'Page' pagetype, and `contactPageInit()` on pages with the 'ContactPage' pagetype.
 
 ```php
 // Page.php
@@ -181,38 +213,6 @@ The list of methods that can be used when overriding test properties is as follo
 - `[get/set]Load()`
 - `[get/set]Callback()`
 - `[get/set]Complete()`
-
-###Clear files & tests:###
-Both the `add_files()` and `add_test()` methods take an optional, last argument (4th and 7th arguments respectively) for a unique identifier. This identifier can then be used to remove a test on certain pages. In the example below, let's assume you have files you want to load on every page _except_ pages with the 'ContactPage' page type:
-
-```php
-// Page.php
-class Page_Controller extends ContentController {
-
-	public function init() {
-		parent::init();
-
-		$myFiles = array(
-			'themes/yourtheme/js/filea.js',
-			'themes/yourtheme/js/fileb.js'
-		);
-
-		Yepnope::add_files($myFiles, null, null, 'MyFiles'); // Set the id 'MyFiles'
-	}
-
-}
-
-// ContactPage.php
-class ContactPage_Controller extends Page_Controller {
-
-	public function init() {
-		parent::init();
-
-		Yepnope::clear_test('MyFiles'); // Clear the test with id 'MyFiles'
-	}
-
-}
-```
 
 ###Resource callback labels:###
 Since version 1.5 of yepnope.js, keys to be used in callbacks are automatically generated from the basename of the file. If you require keys to be used in your callback functions, please use these generated keys as per the example below:
@@ -280,8 +280,3 @@ class Page_Controller extends ContentController {
 ```
 
 MyCallback.ss would then contain your raw Javascript (not wrapped in any HTML tags or anything).
-
-###Todo:###
-
-- Unit tests
-- Update `evalYepnope()` to use a template or something instead of building a string

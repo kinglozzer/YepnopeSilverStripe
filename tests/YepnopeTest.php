@@ -36,11 +36,16 @@ class YepnopeTest extends SapphireTest {
 		$scripts = Requirements::get_custom_scripts();
 		
 		$expects = <<<JS
-yepnope([{
-	load: ['1.js', '2.js'],
-	callback: function() { callback(); },
-	complete: function() { complete(); }
-}]);
+yepnope([
+    {
+        "load": [
+            "1.js",
+            "2.js"
+        ],
+        "callback": function() { callback(); },
+        "complete": function() { complete(); }
+    }
+]);
 JS;
 
 		$this->assertContains($expects, $scripts);
@@ -56,8 +61,22 @@ JS;
 
 		$scripts = Requirements::get_custom_scripts();
 		
-		$this->assertContains("load: ['3.js', '4.js']", $scripts);
-		$this->assertNotContains("load: ['1.js', '2.js']", $scripts);
+		$contains = <<<JS
+        "load": [
+            "3.js",
+            "4.js"
+        ]
+JS;
+
+		$notContains = <<<JS
+        "load": [
+            "1.js",
+            "2.js"
+        ]
+JS;
+
+		$this->assertContains($contains, $scripts);
+		$this->assertNotContains($notContains, $scripts);
 	}
 
 	public function testAddTest() {
@@ -73,14 +92,22 @@ JS;
 		$scripts = Requirements::get_custom_scripts();
 		
 		$expects = <<<JS
-yepnope([{
-	test: window.JSON,
-	yep: ['yep.js'],
-	nope: ['nope.js'],
-	load: ['always-load.js'],
-	callback: function() { callback(); },
-	complete: function() { complete(); }
-}]);
+yepnope([
+    {
+        "test": window.JSON,
+        "yep": [
+            "yep.js"
+        ],
+        "nope": [
+            "nope.js"
+        ],
+        "load": [
+            "always-load.js"
+        ],
+        "callback": function() { callback(); },
+        "complete": function() { complete(); }
+    }
+]);
 JS;
 		
 		$this->assertContains($expects, $scripts);
@@ -97,21 +124,36 @@ JS;
 		$scripts = Requirements::get_custom_scripts();
 
 		$expects = <<<JS
-yepnope([{
-	test: window.JSON,
-	yep: ['yep.js'],
-	nope: ['nope.js'],
-	load: ['always-load.js'],
-	callback: function() { callback(); },
-	complete: function() { complete(); }
-}, {
-	test: Modernizr.geolocation,
-	yep: ['hasGeo.js'],
-	nope: ['geoPolyfill.js'],
-	load: ['geo-app.js'],
-	callback: function() { geoLoaded(); },
-	complete: function() { geoComplete(); }
-}]);
+yepnope([
+    {
+        "test": window.JSON,
+        "yep": [
+            "yep.js"
+        ],
+        "nope": [
+            "nope.js"
+        ],
+        "load": [
+            "always-load.js"
+        ],
+        "callback": function() { callback(); },
+        "complete": function() { complete(); }
+    },
+    {
+        "test": Modernizr.geolocation,
+        "yep": [
+            "hasGeo.js"
+        ],
+        "nope": [
+            "geoPolyfill.js"
+        ],
+        "load": [
+            "geo-app.js"
+        ],
+        "callback": function() { geoLoaded(); },
+        "complete": function() { geoComplete(); }
+    }
+]);
 JS;
 
 		$this->assertContains($expects, $scripts);
