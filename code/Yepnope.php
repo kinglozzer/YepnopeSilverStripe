@@ -161,7 +161,7 @@ class Yepnope_Backend extends Requirements_Backend {
 	 * @return self
 	 */
 	public function __construct() {
-		$this->yepnopeScript = YEPNOPESILVERSTRIPE_BASE . '/javascript/yepnope.1.5.4-min.js';
+		$this->yepnopeScript = YEPNOPESILVERSTRIPE_BASE . '/javascript/yepnope.1.5.4-pre-min.js';
 		$this->yepnopeTests = new ArrayList();
 	}
 
@@ -217,7 +217,7 @@ class Yepnope_Backend extends Requirements_Backend {
 	 * @return void
 	 */
 	public function add_files($files, $callback=null, $complete=null, $id=null) {
-		if(is_string($files)) $files = array($files);
+		$files = (array) $files;
 
 		$id = ($id) ? $id : $this->generateIdentifier($files);
 		$testObject = YepnopeTestObject::create($id, null, null, null, $files, $callback, $complete);

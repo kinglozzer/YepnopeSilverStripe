@@ -280,3 +280,7 @@ class Page_Controller extends ContentController {
 ```
 
 MyCallback.ss would then contain your raw Javascript (not wrapped in any HTML tags or anything).
+
+###Todo:###
+
+- Easier "final complete" function support - see https://github.com/SlexAxton/yepnope.js/issues/29
