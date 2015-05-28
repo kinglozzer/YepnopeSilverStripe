@@ -170,4 +170,13 @@ JS;
 		$this->assertInstanceOf('YepnopeTestObject', $test);
 	}
 
+	public function testNoTestsDoesNotIncludeYepnope() {
+		Yepnope::eval_yepnope();
+		$scripts = Requirements::get_custom_scripts();
+		$javascripts = Requirements::backend()->get_javascript();
+
+		$this->assertEquals('', $scripts, 'YepNope output found, even though no test were added');
+		$this->assertEquals(array(), $javascripts, 'YepNope lib was included, even though no tests were added');
+	}
+
 }

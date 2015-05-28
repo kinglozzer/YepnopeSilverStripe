@@ -290,11 +290,14 @@ class Yepnope_Backend extends Requirements_Backend {
 	 */
 	public function evalYepnope($customScriptID) {
 		$str = "";
+		$tests = $this->yepnopeTests->toArray();
+
+		if (empty($tests)) return;
 
 		if ($yepnope = $this->get_yepnope()) Requirements::javascript($yepnope);
 		if ($timeout = $this->get_timeout()) $str .= "yepnope.errorTimeout = " . $timeout . ";\n";
 
-		$data = $this->convertToObject($this->yepnopeTests->toArray());
+		$data = $this->convertToObject($tests);
 		$str .= 'yepnope(' . $data . ');';
 
 		Requirements::customScript($str, $customScriptID);
