@@ -5,6 +5,7 @@ class YepnopeTest extends SapphireTest
 
     public function setUp()
     {
+        parent::setUp();
         Requirements::clear();
 
         // Reset Yepnope::$backend to null for each test
