@@ -7,6 +7,7 @@ class YepnopeTestObjectTest extends SapphireTest
 
     public function setUp()
     {
+        parent::setUp();
         $this->test = new YepnopeTestObject(
             'id-1',
             'test-1',
